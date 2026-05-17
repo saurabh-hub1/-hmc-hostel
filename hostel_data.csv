@@ -1,0 +1,7 @@
+app_id,applicant_name,mobile,email,from_date,to_date,rooms_required,status,submitted_date,guest_count,room_status,allocated_room,purpose,applicant_type
+6a0885a44f295ad42fa71688,SAURABH Kumar singh,9985464655,saurabh9798474604@gmail.com,2026-05-23T20:26,2026-05-28T20:26,1,Rejected,2026-05-16 20:26:36.845000,0,Booked,,work visit,Serving DRDO
+6a0884024f295ad42fa71687,SAURABH Kumar singh,9985464655,saurabh9798474604@gmail.com,2026-05-16T20:19,2026-05-21T20:19,1,Approved,2026-05-16 20:19:38.020000,1,Occupied,Y-201,work visit,Serving DRDO
+6a0882034f295ad42fa71686,SAURABH Kumar singh,9985464655,saurabh9798474604@gmail.com,2026-05-18T20:10,2026-05-22T20:11,1,Approved,2026-05-16 20:11:07.847000,1,Vacant,G-102,work visit,Serving DRDO
+6a08804ca982cda1b9389a57,SAURABH Kumar singh,9985464655,saurabh9798474604@gmail.com,2026-05-17T20:03,2026-05-19T20:03,1,Approved,2026-05-16 20:03:48.629000,1,Booked,,work visit,Serving DRDO
+6a073a1c1d6a01b43b3dca69,samriddhi verma,6203903075,saurabh9798474604@gmail.com,2026-05-16T20:51,2026-05-19T20:51,1,Approved,2026-05-15 20:52:04.314000,1,Vacant,,work visit,Others
+6a048d5a43f9f9adfc26f024,shreya singh,97486887,shreyaitis11@gmail.com,2026-05-13T20:09,2026-12-13T20:10,1,Approved,2026-05-13 14:40:26.240000,1,Vacant,G-69,internship,Serving DRDO

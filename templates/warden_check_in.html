@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In Guest - HMC Hostel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            min-height: 100vh;
+            padding: 40px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: #e67e22;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .info-section {
+            background: #fef9e7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #e67e22;
+        }
+        .info-section h3 {
+            color: #e67e22;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #e67e22;
+            outline: none;
+        }
+        .room-suggestions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .suggestion-btn {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .suggestion-btn:hover {
+            background: #e67e22;
+            color: white;
+            border-color: #e67e22;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-checkin {
+            flex: 1;
+            background: #27ae60;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-checkin:hover {
+            background: #219a52;
+        }
+        .btn-back {
+            flex: 1;
+            background: #95a5a6;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .btn-back:hover {
+            background: #7f8c8d;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .flash-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .guest-list {
+            margin-top: 15px;
+        }
+        .guest-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .guest-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .guest-type {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        function setRoomNumber(room) {
+            document.getElementById('room_number').value = room;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚪 Check-In Guest</h1>
+            <p>Allocate Room Number</p>
+        </div>
+        
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Applicant Information -->
+            <div class="info-section">
+                <h3>📋 Applicant Details</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Application ID</span>
+                        <span class="info-value">#{{ application.app_id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Name</span>
+                        <span class="info-value">{{ application.applicant_name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Mobile</span>
+                        <span class="info-value">{{ application.mobile }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ application.email }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Purpose</span>
+                        <span class="info-value">{{ application.purpose }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Booking Period</span>
+                        <span class="info-value">{{ application.from_date }} to {{ application.to_date }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Rooms Required</span>
+                        <span class="info-value">{{ application.rooms_required }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Guests</span>
+                        <span class="info-value">{{ application.guest_count }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guest Details -->
+            {% if application.guest_details %}
+            <div class="info-section">
+                <h3>👥 Guest Details</h3>
+                <div class="guest-list">
+                    {% set guests = application.guest_details|default('[]')|tojson|safe %}
+                    {% for guest in application.guest_details %}
+                        <div class="guest-item">
+                            <span class="guest-name">{{ guest.name }}</span>
+                            <span class="guest-type">({{ guest.guest_type }})</span>
+                            <span style="color: #666; margin-left: 10px;">Age: {{ guest.age_sex }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Check-In Form -->
+            <form method="POST">
+                <div class="form-group">
+                    <label>🏠 Allocate Room Number *</label>
+                    <input type="text" id="room_number" name="room_number" placeholder="e.g., G-101, Y-202, GA-301" required>
+                </div>
+                
+                <div class="room-suggestions">
+                    <span style="color: #666; font-size: 13px;">Suggestions:</span>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('G-101')">G-101</button>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('G-102')">G-102</button>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('Y-201')">Y-201</button>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('Y-202')">Y-202</button>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('GA-301')">GA-301</button>
+                    <button type="button" class="suggestion-btn" onclick="setRoomNumber('GA-302')">GA-302</button>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-checkin">✅ Confirm Check-In</button>
+                    <a href="{{ url_for('warden_dashboard') }}" class="btn-back">← Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

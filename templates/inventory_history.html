@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory History - HMC Hostel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+        }
+        .header {
+            background: #e67e22;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: #e67e22;
+            color: white;
+            padding: 12px;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .btn-back {
+            background: #c0392b;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📜 Inventory Transaction History</h1>
+        <a href="{{ url_for('inventory_page') }}" class="btn-back">← Back to Inventory</a>
+    </div>
+    
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Item</th>
+                    <th>Action</th>
+                    <th>Quantity</th>
+                    <th>Old Stock</th>
+                    <th>New Stock</th>
+                    <th>Performed By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in history|reverse %}
+                <tr>
+                    <td>{{ record.timestamp }}</div>
+                    <td>{{ record.item_name }}</div>
+                    <td>
+                        {% if record.action == 'add' %}➕ Added
+                        {% elif record.action == 'use' %}📦 Used
+                        {% elif record.action == 'damage' %}🗑️ Damaged
+                        {% endif %}
+                    </div>
+                    <td>{{ record.quantity }}</div>
+                    <td>{{ record.old_stock }}</div>
+                    <td>{{ record.new_stock }}</div>
+                    <td>{{ record.performed_by }}</div>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
