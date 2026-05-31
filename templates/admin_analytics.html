@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - HMC Hostel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 20px 25px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .header h1 { font-size: 24px; }
+        .header h1 small { font-size: 14px; color: #aaa; display: block; }
+        .btn-back { background: #e74c3c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; transition: 0.3s; display: inline-block; }
+        .btn-back:hover { background: #c0392b; }
+        .btn-refresh { background: #2ecc71; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin-left: 10px; transition: 0.3s; display: inline-block; }
+        .btn-refresh:hover { background: #27ae60; }
+        
+        /* KPI Cards - Smaller */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; border-top: 3px solid; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card .number { font-size: 28px; font-weight: bold; margin: 8px 0; }
+        .stat-card .label { color: #666; font-size: 12px; }
+        
+        /* Charts Grid - 3 columns, smaller charts */
+        .charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .chart-card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .chart-card h3 { margin-bottom: 12px; color: #2c3e50; font-size: 16px; border-left: 3px solid #3498db; padding-left: 10px; }
+        .chart-card canvas { max-height: 220px; width: 100%; }
+        
+        /* Second Row Charts */
+        .charts-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        
+        /* Table */
+        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow-x: auto; }
+        .table-container h3 { margin-bottom: 15px; color: #2c3e50; font-size: 16px; border-left: 3px solid #e74c3c; padding-left: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #34495e; color: white; padding: 10px; text-align: left; font-weight: 500; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f9f9f9; cursor: pointer; }
+        .guest-details-row { display: none; background: #f8f9fa; }
+        .guest-details-row td { padding: 12px; }
+        .guest-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .guest-table th, .guest-table td { border: 1px solid #ddd; padding: 6px; font-size: 12px; }
+        .guest-table th { background: #e9ecef; color: #333; }
+        .expand-icon { font-size: 16px; cursor: pointer; color: #3498db; }
+        .status-badge { padding: 3px 8px; border-radius: 15px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .status-Pending { background: #f1c40f; color: #333; }
+        .status-Approved { background: #2ecc71; color: white; }
+        .status-Rejected { background: #e74c3c; color: white; }
+        
+        @media (max-width: 1000px) { .charts-grid { grid-template-columns: 1fr; } .charts-grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>🏨 HMC GODAVARI/YAMUNA HOSTEL</h1>
+            <small>Defence Institute of Advanced Technology, Pune | Real-Time Analytics Dashboard</small>
+        </div>
+        <div>
+            <a href="/admin-dashboard" class="btn-back">← Back to Dashboard</a>
+            <a href="/admin-analytics" class="btn-refresh">🔄 Refresh</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-top-color: #3498db;"><div class="label">🏨 TOTAL ROOMS</div><div class="number">{{ total_rooms }}</div></div>
+        <div class="stat-card" style="border-top-color: #f39c12;"><div class="label">🟡 OCCUPIED</div><div class="number">{{ occupied }}</div></div>
+        <div class="stat-card" style="border-top-color: #17a2b8;"><div class="label">🔵 BOOKED</div><div class="number">{{ booked }}</div></div>
+        <div class="stat-card" style="border-top-color: #2ecc71;"><div class="label">🟢 VACANT</div><div class="number">{{ vacant }}</div></div>
+        <div class="stat-card" style="border-top-color: #9b59b6;"><div class="label">📋 TOTAL APPS</div><div class="number">{{ total_applications }}</div></div>
+        <div class="stat-card" style="border-top-color: #e67e22;"><div class="label">✅ APPROVED</div><div class="number">{{ approved }}</div></div>
+    </div>
+
+    <!-- First Row Charts (3 columns) -->
+    <div class="charts-grid">
+        <div class="chart-card"><h3>📊 STATUS DISTRIBUTION</h3><canvas id="statusChart"></canvas></div>
+        <div class="chart-card"><h3>🍽️ MESSING REQUIREMENT</h3><canvas id="messingChart"></canvas></div>
+        <div class="chart-card"><h3>👥 GENDER DISTRIBUTION (Male/Female/Child)</h3><canvas id="genderChart"></canvas></div>
+    </div>
+
+    <!-- Second Row Charts (2 columns) -->
+    <div class="charts-grid-2">
+        <div class="chart-card"><h3>👤 APPLICANT TYPE ANALYSIS</h3><canvas id="appTypeChart"></canvas></div>
+        <div class="chart-card"><h3>📈 MONTHLY BOOKING TRENDS</h3><canvas id="monthlyTrendChart"></canvas></div>
+    </div>
+
+    <!-- Third Row - Linen Inventory Bar Chart -->
+    <div class="chart-card" style="margin-bottom: 25px;">
+        <h3>🧺 LINEN INVENTORY STATUS</h3>
+        <canvas id="linenInventoryChart" style="max-height: 300px;"></canvas>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="table-container">
+        <h3>📋 Application Overview (Click on row to expand guest details)</h3>
+        <div style="overflow-x: auto;">
+            <table id="appTable">
+                <thead><tr><th></th><th>App ID</th><th>Applicant Name</th><th>Applicant Type</th><th>Designation</th><th>Messing</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr onclick="toggleGuestDetails('guest-{{ loop.index }}')" style="cursor: pointer;">
+                        <td><span class="expand-icon">▶</span></div>
+                        <td>{{ app.app_id[:8] }}...</div>
+                        <td>{{ app.applicant_name }}</div>
+                        <td>{{ app.applicant_type }}</div>
+                        <td>{{ app.designation or 'N/A' }}</div>
+                        <td>{{ app.messing_required }}</div>
+                        <td><span class="status-badge status-{{ app.status }}">{{ app.status }}</span></div>
+                     </tr>
+                    <tr id="guest-{{ loop.index }}" class="guest-details-row"><td colspan="7">
+                        <strong>Guest Details:</strong>
+                        <table class="guest-table"><thead><tr><th>Name</th><th>Age/Sex</th><th>Type</th><th>Nationality</th><th>Aadhaar</th><th>Contact</th></tr></thead>
+                        <tbody>{% for guest in app.guest_details %}<tr><td>{{ guest.name }}</div><td>{{ guest.age_sex }}</div><td>{{ guest.guest_type }}</div><td>{{ guest.nationality }}</div><td>{{ guest.aadhaar }}</div><td>{{ guest.contact }}</div></tr>{% else %}汽<td colspan="6">No guest details available</div></tr>{% endfor %}</tbody></table>
+                    </div></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chart 1: Status Distribution
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: { labels: ['Pending ({{ pending }})', 'Approved ({{ approved }})', 'Rejected ({{ rejected }})'],
+                datasets: [{ data: [{{ pending }}, {{ approved }}, {{ rejected }}], backgroundColor: ['#f1c40f', '#2ecc71', '#e74c3c'] }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+    });
+
+    // Chart 2: Messing Requirement
+    new Chart(document.getElementById('messingChart'), {
+        type: 'pie',
+        data: { labels: ['Yes ({{ messing_yes }})', 'No ({{ messing_no }})'],
+                datasets: [{ data: [{{ messing_yes }}, {{ messing_no }}], backgroundColor: ['#2ecc71', '#e74c3c'] }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+    });
+
+    // Chart 3: Gender Distribution (Male/Female/Child) - REPLACED Guest Type Breakdown
+    const genderData = {{ gender_data | tojson }};
+    new Chart(document.getElementById('genderChart'), {
+        type: 'doughnut',
+        data: { labels: ['Male', 'Female', 'Child'],
+                datasets: [{ data: [genderData.male, genderData.female, genderData.child], 
+                             backgroundColor: ['#3498db', '#e91e63', '#f1c40f'] }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+    });
+
+    // Chart 4: Applicant Type Analysis
+    const appTypes = {{ app_types | tojson }};
+    new Chart(document.getElementById('appTypeChart'), {
+        type: 'bar',
+        data: { labels: appTypes.map(t => t._id || 'Unknown').slice(0, 6),
+                datasets: [{ label: 'Count', data: appTypes.map(t => t.count).slice(0, 6), backgroundColor: '#3498db', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }, x: { ticks: { font: { size: 9 } } } } }
+    });
+
+    // Chart 5: Monthly Booking Trends
+    new Chart(document.getElementById('monthlyTrendChart'), {
+        type: 'line',
+        data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{ label: 'Bookings', data: [{{ applications|selectattr('status', 'equalto', 'Approved')|list|length }}, {{ approved }}, {{ pending }}, {{ rejected }}, {{ total_applications }}, {{ occupied }}], borderColor: '#3498db', backgroundColor: 'rgba(52,152,219,0.1)', fill: true, tension: 0.3 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 10 } } } }, scales: { y: { beginAtZero: true, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } } }
+    });
+
+    // Chart 6: Linen Inventory Bar Chart
+    const linenItems = ['Bed Sheet', 'Pillow Cover', 'Towel', 'Blanket'];
+    const linenStock = [];
+    
+    // Get inventory data from backend
+    {% for item in inventory %}
+        linenStock.push({{ item.stock }});
+    {% endfor %}
+    
+    new Chart(document.getElementById('linenInventoryChart'), {
+        type: 'bar',
+        data: { labels: linenItems,
+                datasets: [{ label: 'Current Stock (pieces)', data: linenStock, backgroundColor: '#e67e22', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Stock Quantity', font: { size: 11 } }, ticks: { stepSize: 10, font: { size: 10 } } }, x: { ticks: { font: { size: 11 } } } } }
+    });
+
+    // Expand/Collapse guest details
+    function toggleGuestDetails(id) {
+        let row = document.getElementById(id);
+        if (row.style.display === 'none' || row.style.display === '') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
